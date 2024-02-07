@@ -1,28 +1,7 @@
 const todoList = document.querySelector("#todo-list");
 const menuButton = document.querySelector("#menu-button");
 
-let tasks = [
-  {
-    id: 1,
-    nome: "Tarefa 1",
-    concluido: false,
-  },
-  {
-    id: 2,
-    nome: "Tarefa 2",
-    concluido: false,
-  },
-  {
-    id: 3,
-    nome: "Tarefa 3",
-    concluido: false,
-  },
-  {
-    id: 4,
-    nome: "Tarefa 4",
-    concluido: true,
-  },
-];
+let tasks = [];
 
 menuButton.addEventListener("click", () => {
   menuOptions();
