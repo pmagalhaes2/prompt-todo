@@ -51,6 +51,7 @@ const menuOptions = () => {
       getTaskById();
       break;
     case 6:
+      listTasks();
       break;
     default:
       alert("Opção inválida!");
