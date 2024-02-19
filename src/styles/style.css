@@ -43,6 +43,43 @@ main {
     text-transform: uppercase;
   }
 
+  .form-add {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .input-add {
+    width: 25rem;
+    height: 100%;
+    padding: 1.2rem 1rem;
+    outline: none;
+    border: solid 1px #c8d6e5;
+    border-radius: 0.8rem 0 0 0.8rem;
+    font-size: 1.2rem;
+  }
+  
+  .input_add:focus {
+    border: solid 1px #00d2d3;
+    border-right: none;
+  }
+
+  #button-add {
+    background-color: rgba(0, 0, 255, 0.671);
+    color: #f3f3f3;
+    padding: 0 1rem;
+    font-size: 1.2rem;
+    border-radius: 0 0.8rem 0.8rem 0;
+    border: none;
+    cursor: pointer;
+    transition: linear 0.3s;
+  }
+  
+  #button-add:hover {
+    background-color: #2e86de;
+    transition: linear 0.3s;
+  }
+
   #todo-list {
     align-items: center;
     display: flex;
@@ -66,6 +103,11 @@ main {
 
       .task-list.done {
         color: #2ed653;
+      }
+
+      .icons-container {
+        display: flex;
+        gap: 0.5rem;
       }
     }
 

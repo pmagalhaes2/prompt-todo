@@ -1,7 +1,21 @@
 const todoList = document.querySelector("#todo-list");
 const menuButton = document.querySelector("#menu-button");
+const form = document.getElementById("form-id");
+const newTask = document.querySelector("#input-add");
+const buttonAdd = document.querySelector("#button-add");
 
 let tasks = [];
+
+buttonAdd.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  if (newTask.value.trim() === "") {
+    alert("Tarefa inválida, digite novamente!");
+    newTask.value = "";
+  } else {
+    addTask(newTask.value);
+  }
+});
 
 menuButton.addEventListener("click", () => {
   menuOptions();
@@ -10,27 +24,17 @@ menuButton.addEventListener("click", () => {
 const menuOptions = () => {
   const option = parseInt(
     prompt(
-      "Escolha uma opção para prosseguir: \n\n1 - Adicionar uma tarefa\n2 - Editar uma tarefa\n3 - Remover uma tarefa\n4 - Listar todas tarefas\n5 - Obter uma tarefa\n6 - Sair"
+      "Escolha uma opção para prosseguir: \n\n1 - Listar todas tarefas\n2 - Obter uma tarefa\n3 - Sair"
     )
   );
   switch (option) {
     case 1:
-      addTask();
+      listTasks();
       break;
     case 2:
-      editTask();
-      break;
-    case 3:
-      removeTask();
-      break;
-    case 4:
-      listTasks();
-      break;
-    case 5:
       getTaskById();
       break;
-    case 6:
-      listTasks();
+    case 3:
       break;
     default:
       alert("Opção inválida!");
@@ -38,8 +42,7 @@ const menuOptions = () => {
   }
 };
 
-const addTask = () => {
-  const name = prompt("Digite o nome da tarefa: ");
+const addTask = (name) => {
   const nextId = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1;
 
   tasks.push({
@@ -48,18 +51,22 @@ const addTask = () => {
     concluido: false,
   });
 
-  alert("Tarefa adicionada com sucesso!");
-
-  listTasks();
+  updateTasks();
+  form.reset();
 };
 
-const editTask = () => {
-  const taskId = parseInt(prompt("Informe o id da tarefa a ser editada: "));
+const editTask = (taskId) => {
   const task = tasks.find((task) => task.id === taskId);
 
   if (task) {
-    const newName = prompt("Informe o novo nome da tarefa: ");
+    let newName = prompt("Informe o novo nome da tarefa: ");
+
+    while (newName.trim() === "") {
+      newName = prompt("Informe o novo nome da tarefa: ");
+    }
+
     task.nome = newName;
+
     const newStatus = parseInt(
       prompt(
         "Informe o novo status da tarefa, sendo:\n1 - Concluída\n2 - Não concluída"
@@ -85,8 +92,7 @@ const editTask = () => {
   updateTasks();
 };
 
-const removeTask = () => {
-  const taskId = parseInt(prompt("Informe o id da tarefa a ser excluída: "));
+const removeTask = (taskId) => {
   const indexToRemove = tasks.findIndex((task) => task.id === taskId);
 
   indexToRemove !== -1
@@ -109,29 +115,51 @@ const listTasks = () => {
     todoList.appendChild(taskContent);
   } else {
     tasks.forEach((task) => {
-      const taskItem = document.createElement("li");
-      taskItem.classList.add("task-item");
-
-      const taskName = document.createElement("span");
-      taskName.innerHTML = task.nome;
-      taskName.classList.add("task-name");
-
-      const taskId = document.createElement("span");
-      taskId.innerHTML = `Id: ${task.id}`;
-      taskId.classList.add("task-id");
-
-      const taskStatus = document.createElement("span");
-      taskStatus.innerHTML = `${task.concluido ? "Concluída" : "Pendente"}`;
-      taskStatus.classList.add("task-list");
-      taskStatus.classList.add(task.concluido ? "done" : "pending");
-
-      taskItem.appendChild(taskName);
-      taskItem.appendChild(taskId);
-      taskItem.appendChild(taskStatus);
-
+      const taskItem = createTaskElement(task);
       todoList.appendChild(taskItem);
     });
   }
+};
+
+const createTaskElement = (task) => {
+  const taskItem = document.createElement("li");
+  taskItem.classList.add("task-item");
+
+  const taskName = document.createElement("span");
+  taskName.innerHTML = task.nome;
+  taskName.classList.add("task-name");
+
+  const taskId = document.createElement("span");
+  taskId.innerHTML = `Id: ${task.id}`;
+  taskId.classList.add("task-id");
+
+  const taskStatus = document.createElement("span");
+  taskStatus.innerHTML = `${task.concluido ? "Concluída" : "Pendente"}`;
+  taskStatus.classList.add("task-list");
+  taskStatus.classList.add(task.concluido ? "done" : "pending");
+
+  const iconsContainer = document.createElement("div");
+  iconsContainer.setAttribute("class", "icons-container");
+
+  const deleteIcon = document.createElement("span");
+  deleteIcon.innerHTML = "🗑️";
+
+  const editIcon = document.createElement("span");
+  editIcon.innerHTML = "✏️";
+
+  iconsContainer.appendChild(deleteIcon);
+  iconsContainer.appendChild(editIcon);
+
+  taskItem.appendChild(taskName);
+  taskItem.appendChild(taskId);
+  taskItem.appendChild(taskStatus);
+  taskItem.appendChild(iconsContainer);
+
+  deleteIcon.addEventListener("click", () => removeTask(task.id));
+
+  editIcon.addEventListener("click", () => editTask(task.id));
+
+  return taskItem;
 };
 
 const emptyTaskList = () => {
@@ -139,6 +167,7 @@ const emptyTaskList = () => {
 };
 
 const updateTasks = () => {
+  emptyTaskList();
   listTasks();
 };
 
@@ -149,26 +178,7 @@ const getTaskById = () => {
   emptyTaskList();
 
   if (task) {
-    const taskItem = document.createElement("li");
-    taskItem.classList.add("task-item");
-
-    const taskName = document.createElement("span");
-    taskName.innerHTML = task.nome;
-    taskName.classList.add("task-name");
-
-    const taskId = document.createElement("span");
-    taskId.innerHTML = `Id: ${task.id}`;
-    taskId.classList.add("task-id");
-
-    const taskStatus = document.createElement("span");
-    taskStatus.innerHTML = `${task.concluido ? "Concluída" : "Pendente"}`;
-    taskStatus.classList.add("task-list");
-    taskStatus.classList.add(task.concluido ? "done" : "pending");
-
-    taskItem.appendChild(taskName);
-    taskItem.appendChild(taskId);
-    taskItem.appendChild(taskStatus);
-
+    const taskItem = createTaskElement(task);
     todoList.appendChild(taskItem);
   } else {
     const taskContent = document.createElement("h2");
