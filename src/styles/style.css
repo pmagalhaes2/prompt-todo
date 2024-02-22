@@ -58,11 +58,7 @@ main {
     border-radius: 0.8rem 0 0 0.8rem;
     font-size: 1.2rem;
   }
-  
-  .input_add:focus {
-    border: solid 1px #00d2d3;
-    border-right: none;
-  }
+
 
   #button-add {
     background-color: rgba(0, 0, 255, 0.671);
@@ -108,6 +104,10 @@ main {
       .icons-container {
         display: flex;
         gap: 0.5rem;
+
+        span {
+          cursor: pointer;
+        }
       }
     }
 

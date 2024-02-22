@@ -9,12 +9,7 @@ let tasks = [];
 buttonAdd.addEventListener("click", (event) => {
   event.preventDefault();
 
-  if (newTask.value.trim() === "") {
-    alert("Tarefa inválida, digite novamente!");
-    newTask.value = "";
-  } else {
-    addTask(newTask.value);
-  }
+  addTask(newTask.value);
 });
 
 menuButton.addEventListener("click", () => {
@@ -43,6 +38,11 @@ const menuOptions = () => {
 };
 
 const addTask = (name) => {
+  if (name.trim() === "") {
+    alert("O nome da tarefa não pode ser vazio!");
+    return;
+  }
+
   const nextId = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1;
 
   tasks.push({
@@ -51,8 +51,10 @@ const addTask = (name) => {
     concluido: false,
   });
 
-  updateTasks();
+  saveTasksToLocalStorage();
   form.reset();
+
+  updateTasks();
 };
 
 const editTask = (taskId) => {
@@ -81,6 +83,7 @@ const editTask = (taskId) => {
       );
     } else {
       task.concluido = newStatus;
+      saveTasksToLocalStorage();
     }
 
     alert(`Tarefa de id: ${taskId} editada com sucesso!`);
@@ -102,22 +105,22 @@ const removeTask = (taskId) => {
         `Não existe nenhuma tarefa cadastrada com o id: ${taskId}. Tente novamente!`
       );
 
+  saveTasksToLocalStorage();
   updateTasks();
 };
 
 const listTasks = () => {
   emptyTaskList();
   taskContent = "";
+  loadTasksFromLocalStorage();
 
-  if (tasks.length === 0) {
-    const taskContent = document.createElement("h2");
-    taskContent.innerHTML = "Lista de tarefas vazia!";
-    todoList.appendChild(taskContent);
-  } else {
+  if (tasks.length > 0) {
     tasks.forEach((task) => {
       const taskItem = createTaskElement(task);
       todoList.appendChild(taskItem);
     });
+  } else {
+    todoList.innerHTML = `<h2>Lista de tarefas vazia!</h2>`;
   }
 };
 
@@ -143,9 +146,11 @@ const createTaskElement = (task) => {
 
   const deleteIcon = document.createElement("span");
   deleteIcon.innerHTML = "🗑️";
+  deleteIcon.setAttribute("title", "Deletar tarefa");
 
   const editIcon = document.createElement("span");
   editIcon.innerHTML = "✏️";
+  editIcon.setAttribute("title", "Editar tarefa");
 
   iconsContainer.appendChild(deleteIcon);
   iconsContainer.appendChild(editIcon);
@@ -156,7 +161,6 @@ const createTaskElement = (task) => {
   taskItem.appendChild(iconsContainer);
 
   deleteIcon.addEventListener("click", () => removeTask(task.id));
-
   editIcon.addEventListener("click", () => editTask(task.id));
 
   return taskItem;
@@ -181,10 +185,18 @@ const getTaskById = () => {
     const taskItem = createTaskElement(task);
     todoList.appendChild(taskItem);
   } else {
-    const taskContent = document.createElement("h2");
-    taskContent.innerHTML = `Tarefa de id: ${taskId} não encontrada!`;
-    todoList.appendChild(taskContent);
+    alert(`Tarefa de id: ${taskId} não encontrada!`);
+    return;
   }
 };
+
+const saveTasksToLocalStorage = () => {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+};
+
+function loadTasksFromLocalStorage() {
+  const storedTasks = localStorage.getItem("tasks");
+  storedTasks ? (tasks = JSON.parse(storedTasks)) : [];
+}
 
 listTasks();
